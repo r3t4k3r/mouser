@@ -75,6 +75,7 @@ sudo ./main.bin -d /dev/input/event23
 
 # Known Bugs
 - Some context menus can hide pointer (i don't know how to fix it now). In this case u can use **Middle Mouse Button** for detect cursor position.
+- Discrepancies between the real cursor and the emulated cursor when selecting/transferring (Maybe problem with mouse acceleration, i'm not sure)
 
 # Demo Video
 https://webm.red/view/iG9Q.webm
