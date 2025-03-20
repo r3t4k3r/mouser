@@ -1,5 +1,5 @@
 # mouser
-Anti mouse detection tool
+Anti mouse tracking tool. You could prevent user identification using mouse movement fingerprinting.
 
 # Build
 ```bash
