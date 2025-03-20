@@ -1,0 +1,7 @@
+/main.dist
+/main.build
+/main.onefile-build
+/.venv/
+/.ropeproject
+**/__pycache__
+/main.bin
