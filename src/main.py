@@ -17,6 +17,7 @@ class Overlay(tk.Tk):
         self.overrideredirect(True)
         self.offset_x, self.offset_y = None, None
         self.config(cursor="")
+        self.geometry(f"10x10+100+100")
 
     def keep_top(self):
         self.focus_force()

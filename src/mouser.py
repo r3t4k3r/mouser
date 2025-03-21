@@ -5,6 +5,7 @@ import mouse
 import time
 import argparse
 import sys
+import random
 
 def evdev_list():
     devices = [evdev.InputDevice(path) for path in evdev.list_devices()]
@@ -14,6 +15,8 @@ def evdev_list():
 def evdev_run(self, args: argparse.Namespace):
     mouse_abs = list(mouse.get_position())
     mouse_drag = False
+
+    self.geometry(f"10x10+{mouse_abs[0]}+{mouse_abs[1]}")
 
     device = None
     # if --device provided
@@ -64,7 +67,7 @@ def evdev_run(self, args: argparse.Namespace):
                     self.withdraw() # hide window
                     mouse_drag = True
                     mouse.move(mouse_abs[0]-1, mouse_abs[1])
-                    time.sleep(0.001)
+                    time.sleep(random.randint(8, 16)/1000)
                 if event.value == 0:
                     mouse_drag = False
                     self.deiconify()
@@ -74,14 +77,14 @@ def evdev_run(self, args: argparse.Namespace):
                     # hide window
                     self.withdraw()
                     mouse.move(mouse_abs[0]-1, mouse_abs[1])
-                    time.sleep(0.001)
+                    time.sleep(random.randint(8, 16)/1000)
 
                     # send event to Virtual device and execute
                     output_device.write_event(event)
                     output_device.syn()
 
                     # show window
-                    time.sleep(0.001)
+                    time.sleep(random.randint(8, 16)/1000)
                     self.deiconify()
 
             # middle button click
