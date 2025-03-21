@@ -4,7 +4,7 @@ from evdev import UInput
 import mouse
 import time
 import argparse
-import os
+import sys
 
 def evdev_list():
     devices = [evdev.InputDevice(path) for path in evdev.list_devices()]
@@ -36,11 +36,11 @@ def evdev_run(self, args: argparse.Namespace):
                 break
     else:
         print("please provide --device or --name argument, devices list can be showed using --list")
-        os.exit(1)
+        sys.exit(1)
 
     if device is None:
         print("not found device with provided name")
-        os.exit(1)
+        sys.exit(1)
 
     print(f'started with device: {device.path} ({device.name})')
     print('cursor position:', mouse_abs)

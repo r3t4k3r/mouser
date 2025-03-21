@@ -3,7 +3,7 @@ import tkthread; tkthread.patch()
 import tkinter as tk
 import mouser
 import argparse
-import os
+import sys
 
 class Overlay(tk.Tk):
     def __init__(self, *a, **kw):
@@ -40,7 +40,7 @@ class Overlay(tk.Tk):
 
         # show gui
         self.mainloop()
-        os.exit(0)
+        sys.exit(0)
         # t.join()
 
 if __name__ == "__main__":
