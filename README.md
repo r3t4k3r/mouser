@@ -1,14 +1,17 @@
 # mouser
 Anti mouse tracking tool. You could prevent user identification using mouse movement fingerprinting.
 
-# Build
+You can read more information about this security risk on [Whonix WIKI](https://www.whonix.org/wiki/Keystroke_Deanonymization#Mouse_Fingerprinting) and [Wikipedia](https://en.wikipedia.org/wiki/Mouse_tracking)
+
+# Usage
+Software requires root permissions for working. (For grab device, and show device list, `kloak` do the same thing)
+
+## Build
 ```bash
 /scripts/init.sh # init venv and install requirements
 /scripts/build.sh # build project using nuitka
 ```
-
-# Usage
-Software requires root permissions for working.
+`build.sh` script will create a static binary for linux, using `nuitka` (python compiller). If you doesnt' trust nuitka you can run software without it, using `sudo .venv/bin/python3 src/main.py -l`
 
 ## Help
 ```
@@ -68,9 +71,13 @@ sudo ./main.bin -d /dev/input/event23
 ```
 
 # Daily using
-- **Mouse Middle Button** will teleport cursor to pointer position
-- **Mouse Left Button** will teleport cursor to pointer position and click it
-- **Mouse Right Button** will teleport cursor to pointer position and use MBR
+## Workflow
+After running, you will see a red square on the your screen. This is a your new cursor, apps can't track it, they tracks your real cursor. You can move it like a real cursor. For work with app you have to use mostly **LMB**, **MMB**, and **RMB**. For click you just press **LMB**, selecting is also working, this action will teleport your real cursor to red square position and click it. Some actions in web browsers/software could be avaliable only after hover on it without clickig, for do it using `mouser` you have to press **MMB**, this button will teleport your cursor to red-poiter position without clicking.
+
+## Buttons binding
+- **Middle Mouse Button** will teleport cursor to pointer position
+- **Left Mouse Button** will teleport cursor to pointer position and click it
+- **Right Mouse Button** will teleport cursor to pointer position and use MBR
 - **Other buttons** works like on original device
 
 # Known Bugs
