@@ -83,6 +83,7 @@ After running, you will see a red square on the your screen. This is a your new 
 # Known Bugs
 - Some context menus can hide pointer (i don't know how to fix it now). In this case u can use **Middle Mouse Button** for detect cursor position.
 - Discrepancies between the real cursor and the emulated cursor when selecting/transferring (Maybe problem with mouse acceleration, i'm not sure)
+- X11 supports only, doesn't work with XWayland (python library coudn't detect mouse position correctly)
 
 # Demo Video
 https://webm.red/view/iG9Q.webm
