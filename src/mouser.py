@@ -12,11 +12,34 @@ def evdev_list():
     for device in devices:
         print(f"path: {device.path}, name: {device.name}, phys: {device.phys}")
 
-def evdev_run(self, args: argparse.Namespace):
-    mouse_abs = list(mouse.get_position())
+def background(cursor, args: argparse.Namespace):
+    position = deepcopy(cursor.mouse_abs)
+    start = time.time()
+    while True:
+        time.sleep(0.05)
+        end = time.time()
+        time_diff = end - start
+
+        new_position = cursor.mouse_abs
+
+        # no movement more then 300ms
+        if new_position[0] == position[0] and new_position[1] == position[1] and time_diff > args.focus_delay:
+            t = deepcopy(new_position)
+            position = [t[0]-1, t[1]-1]
+            mouse.move(new_position[0]-1, new_position[1]-1)
+            start = time.time()
+        # no movement
+        elif new_position[0] == position[0] and new_position[1] == position[1]:
+            pass
+        else:
+            position = deepcopy(new_position)
+            start = time.time()
+
+def evdev_run(self, cursor, args: argparse.Namespace):
+    cursor.mouse_abs = list(mouse.get_position())
     mouse_drag = False
 
-    self.geometry(f"10x10+{mouse_abs[0]}+{mouse_abs[1]}")
+    self.geometry(f"10x10+{cursor.mouse_abs[0]}+{cursor.mouse_abs[1]}")
 
     device = None
     # if --device provided
@@ -46,8 +69,8 @@ def evdev_run(self, args: argparse.Namespace):
         sys.exit(1)
 
     print(f'started with device: {device.path} ({device.name})')
-    print('cursor position:', mouse_abs)
-    self.geometry(f"10x10+{mouse_abs[0]}+{mouse_abs[1]}")
+    print('cursor position:', cursor.mouse_abs)
+    self.geometry(f"10x10+{cursor.mouse_abs[0]}+{cursor.mouse_abs[1]}")
 
     # copy capabilities from original device
     cap = deepcopy(device.capabilities())
@@ -65,18 +88,21 @@ def evdev_run(self, args: argparse.Namespace):
             if event.code == 272: # onclick
                 if event.value == 1:
                     self.withdraw() # hide window
-                    mouse_drag = True
-                    mouse.move(mouse_abs[0]-1, mouse_abs[1])
+                    mouse.move(cursor.mouse_abs[0]-1, cursor.mouse_abs[1])
                     time.sleep(random.randint(8, 16)/1000)
+                    mouse_drag = True
                 if event.value == 0:
                     mouse_drag = False
+                    position = list(mouse.get_position())
+                    mouse.move(position[0], position[1])
+                    time.sleep(random.randint(8, 16)/1000)
                     self.deiconify()
 
             if event.code == 273: # RMB
                 if event.value == 1:
                     # hide window
                     self.withdraw()
-                    mouse.move(mouse_abs[0]-1, mouse_abs[1])
+                    mouse.move(cursor.mouse_abs[0]-1, cursor.mouse_abs[1])
                     time.sleep(random.randint(8, 16)/1000)
 
                     # send event to Virtual device and execute
@@ -88,9 +114,18 @@ def evdev_run(self, args: argparse.Namespace):
                     self.deiconify()
 
             # middle button click
-            if event.code == 274 and event.value == 1:
-                mouse.move(mouse_abs[0]-1, mouse_abs[1])
-                continue
+            if event.code == 274:
+                if event.value == 1:
+                    self.withdraw() # hide window
+                    mouse.move(cursor.mouse_abs[0]-1, cursor.mouse_abs[1])
+                    time.sleep(random.randint(8, 16)/1000)
+                    mouse_drag = True
+                if event.value == 0:
+                    mouse_drag = False
+                    position = list(mouse.get_position())
+                    mouse.move(position[0], position[1])
+                    time.sleep(random.randint(8, 16)/1000)
+                    self.deiconify()
 
             output_device.write_event(event)
             output_device.syn()
@@ -99,14 +134,14 @@ def evdev_run(self, args: argparse.Namespace):
             # print("code:", event.code, "value:", event.value)
             if event.code == 0: # horizontal
                 if mouse_drag: # twice
-                    mouse_abs[0] = max(0, mouse_abs[0]+event.value*2)
+                    cursor.mouse_abs[0] = max(0, cursor.mouse_abs[0]+event.value)
                 else:
-                    mouse_abs[0] = max(0, mouse_abs[0]+event.value)
+                    cursor.mouse_abs[0] = max(0, cursor.mouse_abs[0]+event.value)
             elif event.code == 1: # vertical
                 if mouse_drag: # twice
-                    mouse_abs[1] = max(0, mouse_abs[1]+event.value*2)
+                    cursor.mouse_abs[1] = max(0, cursor.mouse_abs[1]+event.value)
                 else:
-                    mouse_abs[1] = max(0, mouse_abs[1]+event.value)
+                    cursor.mouse_abs[1] = max(0, cursor.mouse_abs[1]+event.value)
             elif event.code == 11 or event.code == 8: # scroll
                 output_device.write_event(event)
                 output_device.syn()
@@ -116,8 +151,8 @@ def evdev_run(self, args: argparse.Namespace):
                 output_device.write(0,0,0)
                 output_device.syn()
 
-            self.geometry(f"10x10+{mouse_abs[0]}+{mouse_abs[1]}")
-            # self.keep_top()
+            self.geometry(f"10x10+{cursor.mouse_abs[0]}+{cursor.mouse_abs[1]}")
+            self.keep_top()
         elif event.type == 4: # hold
             pass
         elif event.type == 0: # mouse move finish?

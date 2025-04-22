@@ -5,6 +5,12 @@ import mouser
 import argparse
 import sys
 
+class Cursror:
+    mouse_abs: list[int]
+
+    def __init__(self):
+        self.mouse_abs = [0, 0]
+
 class Overlay(tk.Tk):
     def __init__(self, *a, **kw):
         tk.Tk.__init__(self, *a, **kw)
@@ -36,13 +42,19 @@ class Overlay(tk.Tk):
             return
 
         # start mouser
-        t = threading.Thread(target=mouser.evdev_run, args=(self, args))
+        cursor = Cursror()
+        t = threading.Thread(target=mouser.evdev_run, args=(self, cursor, args))
+        t1 = threading.Thread(target=mouser.background, args=(cursor, args))
+
         t.start()
+        t1.start()
 
         # show gui
         self.mainloop()
         sys.exit(0)
+
         # t.join()
+        # t1.join()
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
@@ -50,6 +62,7 @@ if __name__ == "__main__":
     p.add_argument('-n', '--name', help="substring for search in devices, for example 'E-Signal USB Gaming Mouse'")
     p.add_argument('-p', '--phys', help="substring for search in phys, if exists more then 1 device with the same name, you have to provide this argument (see --list)")
     p.add_argument('-l', '--list', help="just show devices list and exit", action='store_true')
+    p.add_argument('-f', '--focus-delay', help="delay between cursor teleport", type=float, default=0.2)
     args = p.parse_args()
 
     Overlay().run(args)
